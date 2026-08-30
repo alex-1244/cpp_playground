@@ -2,6 +2,29 @@
 #include <iostream>
 #include <vector>
 
+void printResults(const std::vector<double> &readings, double max, double min, double avg, double median) {
+    std::cout << "count: " << readings.size() << "\n";
+    std::cout << "min: " << min << "\n";
+    std::cout << "max: " << max << "\n";
+    std::cout << "average: " << avg << "\n";
+    std::cout << "median: " << median << "\n";
+}
+
+// expects sorted vector
+double calculateMedian(const std::vector<double> &readings) {
+    double median = 0;
+    if (!readings.empty()) {
+        if (readings.size() % 2 == 1) {
+            median = readings[readings.size() / 2];
+        }else {
+            median = (readings[readings.size() / 2] + readings[readings.size() / 2 - 1])
+                / 2;
+        }
+    }
+
+    return median;
+}
+
 int main() {
     std::vector<double> readings;
 
@@ -13,7 +36,7 @@ int main() {
     while (std::cin >> reading) {
         readings.push_back(reading);
         if (reading < -40 || reading > 85) {
-            std::cout << "reading outside the range!\n";
+            std::cout << "reading outside the range: " << reading << ", position: " << readings.size() - 1 << "\n";
         }
 
         summ = summ + reading;
@@ -27,22 +50,18 @@ int main() {
         }
     }
 
+    if (std::cin.fail() && !std::cin.eof()) {
+        std::cout << "stream failed on corrupted input" << "\n";
+    }
+
+
     double avg = 0;
     double median = 0;
     if (!readings.empty()) {
         avg = summ / static_cast<double>(readings.size());
         std::ranges::sort(readings);
-
-        if (readings.size() % 2 == 1) {
-            median = readings[readings.size() / 2];
-        }else {
-            median = (readings[readings.size() / 2] + readings[readings.size() / 2 - 1])
-                / 2;
-        }
+        median = calculateMedian(readings);
     }
 
-    std::cout << min << "\n";
-    std::cout << max << "\n";
-    std::cout << avg << "\n";
-    std::cout << median << "\n";
+    printResults(readings, max, min, avg, median);
 }
