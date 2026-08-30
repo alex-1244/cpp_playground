@@ -3,7 +3,8 @@
 *Single source of truth for where we are. Claude updates it every session; tick boxes yourself freely.*
 *To resume any time: open a Cowork session on this folder and say "continue C++ coaching".*
 
-> **Now (2026-08-30):** Phase 1 · Assignment 1 reviewed — **Parts A, C, D accepted**; Part B revision outstanding (see below). Then: **Milestone M1 `templog`**.
+> **Now (2026-08-30):** Phase 1 · **Assignment 1 PASSED** · **Milestone M1 `templog` issued** — spec below, data file `sensors.csv` in the repo.
+> Epilogue owed with the next commit: actual outcomes + the one-sentence trust-model conclusion as comments in `predictions.cpp`.
 
 ---
 
@@ -13,7 +14,7 @@
 
 - [x] `git init` + `.gitignore` (`cmake-build-*/`, `*.exe`) + real commit history *(2026-08-30, 5 commits)*
 - [x] Terminal compile without the IDE (incl. PATH lesson: CLion's bundled MinGW isn't on PATH) *(2026-08-30)*
-- [ ] Compiler error vs linker error — compiler side seen; linker side: `f()` was orphaned by the CMake target swap, since restored & deleted — **confirm you actually saw `undefined reference to f()` before deleting it** (one line in chat closes this)
+- [x] Compiler error vs linker error — both provoked and witnessed, incl. `undefined reference to f()` *(confirmed 2026-08-30)*
 
 **Part B — `01_sensor_stats.cpp` (~2 h)**
 
@@ -24,10 +25,10 @@ Spec (amended 2026-08-30: **median** added — it's the reason the vector must e
 - [x] Read readings until end-of-input into a `std::vector<double>` (stretch adopted as the main path)
 - [x] Median — correct for odd/even/single/negatives/empty (verified in sandbox 2026-08-30)
 - [x] Empty-input guard; `static_cast<double>` for size conversion
-- [ ] **Revision:** print **count** + label every output line (empty input currently prints four bare zeros — indistinguishable from real data)
-- [ ] **Revision:** out-of-range warning must name the offender's **position and value**
-- [ ] **Revision:** extract **≥2 functions** besides `main` — and state your parameter choice (by value / by reference) and why
-- [ ] **Open question to answer in chat:** feed `1 2 abc 3` — explain what the stream did at `abc`, and how the program can *detect* the early stop (eof vs fail). This becomes M1's corrupt-line defense.
+- [x] **Revision:** count printed + all output lines labeled *(2026-08-30)*
+- [x] **Revision:** out-of-range warning names value and position (0-based) *(2026-08-30)*
+- [x] **Revision:** two functions extracted — `calculateMedian(const std::vector<double>&)` with documented sorted-precondition, `printResults` fixed to const-ref after the "your own rule" nudge *(2026-08-30)*
+- [x] **Open question answered:** stream mechanics explained (failbit is sticky, parse ≠ cast, unconsumed buffer); detection implemented as `if (cin.fail() && !cin.eof())` → error message. Witnessed the fail-on-clean-end surprise live. *(2026-08-30)*
 
 **Part C — `02_puzzlers.cpp` (~45 min)**
 
@@ -44,8 +45,8 @@ Every one of these compiles. In C#, **none** of them would. Afterwards, write on
 comment: what does this tell you about the C++ compiler's trust model?
 
 - [x] Predictions made *before* running — graded **3.5/4** in chat (2026-08-30): №1 garbage ✓ (terminology: the variable *is* the slot, nothing "points"; and it's UB — deterministic 1 at -O0, 0 at -O2/-O3 on his machine), №2 pointer arithmetic ✓ (correction: literal is null-terminated → exactly `"bc"`, no trailing garbage), №3 truncation ✓ (C++ allows with `=`, braces `{}` would refuse), №4 outcome ✓ (assignment is an expression, int→bool conversion)
-- [ ] Transcribe predictions + actual outcomes as comments into `predictions.cpp`, plus the one-sentence trust-model conclusion (currently the file still says "prediction?")
-- [ ] Add missing `#include <string>` to predictions.cpp (it compiles via iostream's transitive includes — a portability accident, not a guarantee; include what you use)
+- [x] Predictions transcribed as comments; `#include <string>` added (include-what-you-use) *(2026-08-30)*
+- [ ] **Epilogue (non-blocking):** add actual outcomes next to each prediction + the one-sentence trust-model conclusion
 
 **Part D — warnings (~15 min)**
 
@@ -54,6 +55,29 @@ comment: what does this tell you about the C++ compiler's trust model?
 Reading alongside: learncpp.com — the intro chapters, *fundamental data types*, and *intro to std::vector*.
 
 **Done =** everything committed → tell Claude *"review assignment 1"*.
+
+**VERDICT: PASSED 2026-08-30.** Build clean under `-Wall -Wextra`; garbage detection, labels, positions, const-correct functions all verified in sandbox.
+
+---
+
+## Milestone M1 — `templog` *(issued 2026-08-30)*
+
+The scenario: three days of temperature logs from five home sensors landed in **`sensors.csv`** (in the repo — supplied by Claude, with deliberate damage inside: corrupt lines *and* impossible readings, locations undisclosed). Build the tool that turns it into a report you can trust.
+
+Run as: `templog sensors.csv` — the path comes from the **command line**, not stdin (new topic: `argc`/`argv`).
+
+- [ ] **First multi-file program:** `stats.h` + `stats.cpp` (min/max/mean/median over `std::vector<double>`) used by `02_templog.cpp`; one CMake target, two .cpp files. This closes the Phase 0 gate — be ready to explain .h vs .cpp and what `#pragma once` protects against.
+- [ ] Read **line by line** (`std::getline`), skip the header row, split on commas into a `Reading` struct (your first struct): timestamp, sensor, value. Parsing strategy is your choice (`std::stringstream`, or `find`+`substr`).
+- [ ] A line that doesn't parse cleanly → **report it with its line number, skip it, keep going.** Note what you've gained over `cin >> double`: per-line reading contains the damage. Be ready to say why.
+- [ ] Group readings per sensor. Recommended discovery: `std::map<std::string, std::vector<double>>` — the standard library's answer to `Dictionary` (sorted, no hashing). Rolling your own grouping with vectors is also acceptable.
+- [ ] Out-of-range readings (outside **[-40, 85] °C**): **excluded from the statistics**, listed separately as anomalies (sensor, value, line number). Note this is a different policy than `sensor_stats`, which included them — in M1 they're presumed sensor faults.
+- [ ] Report: per sensor — count, min, max, mean, median; then the anomaly list; then the corrupt-line list; totals at the end.
+- [ ] Rules: const-correct signatures everywhere; no `new`/`delete`; range-for where natural.
+- [ ] Stretch: exit code 1 if any corrupt lines were found (what `return` from `main` is for); `--sensor <name>` filter argument.
+
+**Gate:** clean build with warnings on; numbers match Claude's independently computed answer key; every sabotaged line caught with the right line number; the .h/.cpp explanation delivered.
+
+Reading alongside: learncpp — `std::string` & `std::getline`, structs, command-line arguments; cppreference: `std::map`.
 
 ---
 
@@ -68,8 +92,8 @@ Reading alongside: learncpp.com — the intro chapters, *fundamental data types*
 - [ ] **Gate:** ~~what the linker does~~ ✓ conversationally · .h vs .cpp explanation — lands naturally in M1 when the code first splits into files
 
 ### Phase 1 — Core syntax & the value model
-- [ ] Assignment 1 reviewed
-- [ ] Value semantics: predict copy vs reference correctly in review
+- [x] Assignment 1 reviewed & passed *(2026-08-30)*
+- [x] Parameter-passing contract understood: cheap by value / `const T&` default / naked `T&` = mutation intent; found the by-value copy in his own `printResults` *(2026-08-30)*
 - [ ] Strings/vectors/range-for fluent; const habit forming
 - [ ] **Milestone M1 `templog`** built and reviewed
 - [ ] **Gate passed**
@@ -108,8 +132,11 @@ Reading alongside: learncpp.com — the intro chapters, *fundamental data types*
 | 2026-08-27 | Kickoff | — | Toolchain verified (GCC 13.1, C++20). Roadmap + tracker created. Assignment 1 issued. |
 | 2026-08-30 | Median (Part B core) | ✓ correct | Sandbox-verified: odd/even/single/negatives/empty all right; min/max init sound. Punch list issued: count+labels, offender positions, function extraction. |
 | 2026-08-30 | Parts A, C, D | ✓ accepted | Git history real; CMake 3 targets + `-Wall -Wextra` correctly placed; predictions 3.5/4; UB determinism explored hands-on (-O0 → 1, -O2/-O3 → 0). Pending: prediction comments in file, linker-error confirmation. |
+| 2026-08-30 | **Assignment 1 final** | **PASSED** | Revision complete: labels+count, position+value warnings, `calculateMedian` (const-ref, documented precondition) + `printResults` (const-ref after nudge), `fail() && !eof()` detection with error message. Sandbox: clean build, correct behavior on garbage & clean runs. Epilogue open: outcomes + trust-model sentence in predictions.cpp. |
+| 2026-08-30 | **M1 `templog` issued** | — | `sensors.csv` (64 data lines, 5 sensors) committed to repo with undisclosed sabotage; answer key held by Claude. |
 
 ## Session log
 
 - **2026-08-27** — Kickoff: profiled background (10y C#/.NET), confirmed hardware (2× TTGO LoRa32, 1× LuaNode32), 3–5 h/week, mixed style. Roadmap written. Assignment 1 issued.
 - **2026-08-30** — Big session. Covered along the way: PATH & how shells find programs; compile→link pipeline (-c, symbol tables, lazy linker); read-until-EOF idiom (`while (cin >> v)`) + the `!eof()` trap; streaming vs storing (median amendment); narrowing conversions & first `static_cast`; `std::sort` / algorithms-as-free-functions (STL vs LINQ shape); UB masterclass — deterministic garbage, optimizer as-if rule, -O levels ↔ Debug/Release. Median verified correct. A1 nearly closed: Part B revision + predictions transcription outstanding.
+- **2026-08-30 (cont.)** — Stream state machine closed out: sticky failbit, fail-on-clean-end witnessed via his own experiment, `fail() && !eof()` detection shipped. Parameter-passing contract taught off his own theory (const-ref default; he found the by-value copy in `printResults` himself). **Assignment 1 PASSED.** **M1 `templog` issued** with sabotaged `sensors.csv`; new ground ahead: argc/argv, getline+splitting, first struct, first header split, std::map.
