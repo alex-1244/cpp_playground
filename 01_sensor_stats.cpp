@@ -1,20 +1,23 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
 
 int main() {
-    double max=0;
-    double min=0;
-    double summ=0;
-    int N = 0;
+    std::vector<double> readings;
+
+    double max = 0;
+    double min = 0;
+    double summ = 0;
 
     double reading;
     while (std::cin >> reading) {
+        readings.push_back(reading);
         if (reading < -40 || reading > 85) {
             std::cout << "reading outside the range!\n";
         }
 
         summ = summ + reading;
-        if (N==0) {
+        if (readings.size() == 1) {
             max = reading;
             min = reading;
         } else if (reading > max) {
@@ -22,13 +25,24 @@ int main() {
         } else if (reading < min) {
             min = reading;
         }
-
-        N++;
     }
 
-    double avg = summ/N;
+    double avg = 0;
+    double median = 0;
+    if (!readings.empty()) {
+        avg = summ / static_cast<double>(readings.size());
+        std::ranges::sort(readings);
+
+        if (readings.size() % 2 == 1) {
+            median = readings[readings.size() / 2];
+        }else {
+            median = (readings[readings.size() / 2] + readings[readings.size() / 2 - 1])
+                / 2;
+        }
+    }
 
     std::cout << min << "\n";
     std::cout << max << "\n";
     std::cout << avg << "\n";
+    std::cout << median << "\n";
 }
