@@ -1,6 +1,8 @@
 # C++ Roadmap — from C# to embedded & IoT
 
 *Created 2026-08-27. Learner: Aleksey (10+ years C#/.NET web). Mentor: Claude.*
+*Current environment (2026-11-21): Omarchy/Linux + VS Code; GCC, CMake, Ninja, GDB, and Clang tools selected. Build with `./build.sh`. Original Windows setup below is historical. Current learning position: Phase 1, M1 in progress; calendar estimates are not deadlines.*
+
 *Companion file: [PROGRESS.md](PROGRESS.md) — the living tracker, updated every session.*
 
 ## The goal

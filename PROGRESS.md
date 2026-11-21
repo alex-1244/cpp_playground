@@ -3,7 +3,7 @@
 *Single source of truth for where we are. Claude updates it every session; tick boxes yourself freely.*
 *To resume any time: open a Cowork session on this folder and say "continue C++ coaching".*
 
-> **Now (2026-08-30):** Phase 1 · **Assignment 1 PASSED** · **Milestone M1 `templog` issued** — spec below, data file `sensors.csv` in the repo.
+> **Now (2026-11-21):** Phase 1 · **Assignment 1 PASSED** · **Milestone M1 `templog` in progress**. Linux GCC/CMake/Ninja build verified via `./build.sh`. Next: argument handling and iterator initialization, then CSV parsing.
 > Epilogue owed with the next commit: actual outcomes + the one-sentence trust-model conclusion as comments in `predictions.cpp`.
 
 ---
@@ -140,3 +140,5 @@ Reading alongside: learncpp — `std::string` & `std::getline`, structs, command
 - **2026-08-27** — Kickoff: profiled background (10y C#/.NET), confirmed hardware (2× TTGO LoRa32, 1× LuaNode32), 3–5 h/week, mixed style. Roadmap written. Assignment 1 issued.
 - **2026-08-30** — Big session. Covered along the way: PATH & how shells find programs; compile→link pipeline (-c, symbol tables, lazy linker); read-until-EOF idiom (`while (cin >> v)`) + the `!eof()` trap; streaming vs storing (median amendment); narrowing conversions & first `static_cast`; `std::sort` / algorithms-as-free-functions (STL vs LINQ shape); UB masterclass — deterministic garbage, optimizer as-if rule, -O levels ↔ Debug/Release. Median verified correct. A1 nearly closed: Part B revision + predictions transcription outstanding.
 - **2026-08-30 (cont.)** — Stream state machine closed out: sticky failbit, fail-on-clean-end witnessed via his own experiment, `fail() && !eof()` detection shipped. Parameter-passing contract taught off his own theory (const-ref default; he found the by-value copy in `printResults` himself). **Assignment 1 PASSED.** **M1 `templog` issued** with sabotaged `sensors.csv`; new ground ahead: argc/argv, getline+splitting, first struct, first header split, std::map.
+
+- **2026-11-21** — Moved development to Omarchy/Linux with VS Code. Added `build.sh` (GCC, Debug, Ninja, compilation database) and ignored `build/`; build verified. Reviewed roadmap and current M1 source: header/source split and statistics functions started, file-reading/header-skip loop present; CSV parsing, grouping, anomalies, and reporting still pending. Review findings to work through: `argc` includes the program name and the input path belongs in `argv[1]`; `Min`/`Max` dereference an iterator before initializing it; `Median` needs a documented/enforced sorted-input contract; empty-input statistics policy needs to be explicit. No M1 gate awarded yet. Prediction epilogue remains open.
