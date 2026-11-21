@@ -13,8 +13,7 @@ you already own), then robotics fundamentals (motor control, PID) as the next ho
 
 ## How we work — the contract
 
-- **You write every line of code.** Claude never writes solutions — only reviews, hints
-  (escalating, gentlest first), explanations with C# contrasts, build configuration, and test data.
+- **You write every line of code and every build file yourself.** The assistant is a mentor and teacher: reviews, questions, gentle hints, and explanations with C# contrasts. Do not generate or edit C++ code, scripts, Makefiles, CMake files, or other build configuration. This explicit learner instruction (2026-11-21) supersedes the earlier build-configuration exception. Progress and roadmap notes may be maintained separately.
 - Rhythm per phase: short exercises per topic → one **milestone project** → **mentor review gate**.
 - **Gates, not dates.** The calendar below is a sanity check, not a deadline. A phase ends
   when its gate is passed, never because a week ended.
